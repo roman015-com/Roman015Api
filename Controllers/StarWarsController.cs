@@ -14,6 +14,7 @@ namespace Roman015API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class StarWarsController : ControllerBase
     {
         private readonly IHubContext<StarWarsHub, IStarWarsHub> hubContext;
