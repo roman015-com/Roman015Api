@@ -70,6 +70,13 @@ namespace Roman015API
                         options.Configuration.Password = Configuration["RedisBackplane:Password"];                        
                     });
 
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration["RedisBackplane:ConnectionString"];
+                options.ConfigurationOptions.ChannelPrefix = "starwars";
+                options.ConfigurationOptions.Password = Configuration["RedisBackplane:Password"];
+            });
+
             services.AddControllers().AddControllersAsServices();
 
             services.AddHostedService<CacheWarmupService>();
@@ -100,6 +107,7 @@ namespace Roman015API
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<NotificationHub>("/NotificationHub");
+                endpoints.MapHub<StarWarsHub>("/StarWarsHub");
             });
         }
 
