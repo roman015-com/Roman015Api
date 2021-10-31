@@ -1,14 +1,9 @@
 ﻿using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Roman015API.Models;
+using Roman015API.Models.Blog;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Roman015API.Controllers
 {
@@ -20,14 +15,14 @@ namespace Roman015API.Controllers
         private IConfiguration Configuration { get; }
         private BlobContainerClient BlogContainer { get; }
 
-        private BlogViewerController blogViewerController;
+        private readonly BlogViewerController blogViewerController;
 
         private readonly int maxFileSizeBytes = 1024 * 1024 * 2; // 2MB
 
         public BlogEditorController(IConfiguration Configuration, BlogViewerController blogViewerController)
         {
             this.Configuration = Configuration;
-            this.BlogContainer = new BlobContainerClient(Configuration["AzureBlobConnectionString"], "blog");
+            this.BlogContainer = new BlobContainerClient(this.Configuration["AzureBlobConnectionString"], "blog");
             this.blogViewerController = blogViewerController;
         }
 

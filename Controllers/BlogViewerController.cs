@@ -1,17 +1,13 @@
 ﻿using Azure.Storage.Blobs;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Azure.Storage.Blobs.Models;
-using Roman015API.Models;
 using System.IO;
 using Microsoft.Extensions.Caching.Memory;
+using Roman015API.Models.Blog;
 
 namespace Roman015API.Controllers
 {
@@ -29,14 +25,14 @@ namespace Roman015API.Controllers
         {
             this.Configuration = Configuration;
             this.MemoryCache = MemoryCache;
-            this.BlogContainer = new BlobContainerClient(Configuration["AzureBlobConnectionString"], "blog");           
+            this.BlogContainer = new BlobContainerClient(this.Configuration["AzureBlobConnectionString"], "blog");           
         }
 
         [HttpGet]
         [Route("GetAllTags")]
         public IActionResult GetTags()
         {
-            List<string> tags = new List<string>();
+            List<string> tags = new();
 
             var posts = GetAllPosts();
 
@@ -138,14 +134,13 @@ namespace Roman015API.Controllers
 
         private Post[] GetAllPosts()
         {
-            Post[] result;
 
             // Ensure Cache is good
-            if (!MemoryCache.TryGetValue<Post[]>(AllPostsCacheKey, out result))
+            if (!MemoryCache.TryGetValue<Post[]>(AllPostsCacheKey, out Post[] result))
             {
                 // Set Cache if Empty
                 MemoryCache.Set<Post[]>(AllPostsCacheKey, GetPostsFromServer(), GetPostMemoryCacheEntryOptions());
-                
+
                 // Read from cache again
                 MemoryCache.TryGetValue<Post[]>(AllPostsCacheKey, out result);
             }
@@ -169,7 +164,7 @@ namespace Roman015API.Controllers
             return result;
         }
 
-        private MemoryCacheEntryOptions GetPostMemoryCacheEntryOptions()
+        private static MemoryCacheEntryOptions GetPostMemoryCacheEntryOptions()
         {
             return new MemoryCacheEntryOptions()
             {                
@@ -180,7 +175,7 @@ namespace Roman015API.Controllers
 
         private Post[] GetPostsFromServer()
         {
-            List<Post> posts = new List<Post>();
+            List<Post> posts = new();
             var blobList = BlogContainer.GetBlobs(BlobTraits.Metadata, BlobStates.None, "post_")
                     .Where(item => item.Name.EndsWith(".md"));
 
