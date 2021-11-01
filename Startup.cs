@@ -72,9 +72,7 @@ namespace Roman015API
 
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = Configuration["RedisBackplane:ConnectionString"];
-                options.ConfigurationOptions = new ConfigurationOptions();
-                options.ConfigurationOptions.ChannelPrefix = "starwars";
+                options.ConfigurationOptions = ConfigurationOptions.Parse(Configuration["RedisBackplane:ConnectionString"]);
                 options.ConfigurationOptions.Password = Configuration["RedisBackplane:Password"];
             });
 
