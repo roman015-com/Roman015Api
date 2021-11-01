@@ -75,6 +75,7 @@ namespace Roman015API.Hubs
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
+            logger.Log(LogLevel.Information, "OnDisconnectedAsync : ConnectionId " + Context.ConnectionId);
             try
             {
                 Groups.RemoveFromGroupAsync(Context.ConnectionId, "JediCount");
