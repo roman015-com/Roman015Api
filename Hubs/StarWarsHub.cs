@@ -67,6 +67,8 @@ namespace Roman015API.Hubs
             //await Groups.AddToGroupAsync(
             //    Context.ConnectionId,
             //    isJedi ? "Jedi" : "Sith");
+            distributedCache.Refresh("JediCount");
+            distributedCache.Refresh("SithCount");
 
             if (isJedi)
             {                
@@ -74,7 +76,7 @@ namespace Roman015API.Hubs
                     "JediCount",
                     BitConverter.GetBytes(
                         BitConverter.ToInt32(distributedCache.Get("JediCount")) + 1)
-                );
+                );                
             }
             else
             {
@@ -82,8 +84,9 @@ namespace Roman015API.Hubs
                     "SithCount",
                     BitConverter.GetBytes(
                         BitConverter.ToInt32(distributedCache.Get("SithCount")) + 1)
-                );
+                );                
             }
+
         }
 
         public void SwitchSide(bool isJedi)
@@ -95,6 +98,8 @@ namespace Roman015API.Hubs
             //await Groups.AddToGroupAsync(
             //    Context.ConnectionId,
             //    isJedi ? "Jedi" : "Sith");
+            distributedCache.Refresh("JediCount");
+            distributedCache.Refresh("SithCount");
 
             if (isJedi)
             {
@@ -129,6 +134,8 @@ namespace Roman015API.Hubs
             //await Groups.RemoveFromGroupAsync(
             //    Context.ConnectionId,
             //    isJedi ? "Jedi" : "Sith");
+            distributedCache.Refresh("JediCount");
+            distributedCache.Refresh("SithCount");
 
             if (isJedi)
             {
