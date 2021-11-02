@@ -12,11 +12,11 @@ namespace Roman015API.Hubs
     {
         Task Order66Executed(int JediCount, int SithCount);
 
-        void JoinSide(bool isJedi);
+        Task JoinSide(bool isJedi);
 
-        void SwitchSide(bool isJedi);
+        Task SwitchSide(bool isJedi);
 
-        void LeaveSide(bool isJedi);
+        Task LeaveSide(bool isJedi);
     }
 
     public class StarWarsHub : Hub<IStarWarsHub>
