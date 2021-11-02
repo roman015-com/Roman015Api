@@ -45,7 +45,8 @@ namespace Roman015API.Controllers
             {
                 RequestTimeStamp = DateTime.Now.ToString("dd/MM/yyyy HH:mm.ss"),
                 JediCount = BitConverter.ToInt32(distributedCache.Get("JediCount")),
-                SithCount = BitConverter.ToInt32(distributedCache.Get("SithCount"))
+                SithCount = BitConverter.ToInt32(distributedCache.Get("SithCount")),
+                TotalCount = BitConverter.ToInt32(distributedCache.Get("TotalCount"))
             });
         }
 
@@ -54,16 +55,21 @@ namespace Roman015API.Controllers
         [Authorize(Roles = "WearOSApp")]
         public IActionResult ExecuteOrder66()
         {
-            hubContext.Clients.All.Order66Executed(
-                BitConverter.ToInt32(distributedCache.Get("JediCount")),
-                BitConverter.ToInt32(distributedCache.Get("SithCount"))
-            );
+            int jediCount = BitConverter.ToInt32(distributedCache.Get("JediCount"));
+            int sithCount = BitConverter.ToInt32(distributedCache.Get("SithCount"));
+            int totalCount = BitConverter.ToInt32(distributedCache.Get("TotalCount"));
+
+            distributedCache.Set("JediCount", BitConverter.GetBytes(0));
+            distributedCache.Set("SithCount", BitConverter.GetBytes(0));
+
+            hubContext.Clients.All.Order66Executed(jediCount, sithCount);
 
             return Ok(new
             {
                 RequestTimeStamp = DateTime.Now.ToString("dd/MM/yyyy HH:mm.ss"),
-                JediCount = BitConverter.ToInt32(distributedCache.Get("JediCount")),
-                SithCount = BitConverter.ToInt32(distributedCache.Get("SithCount"))
+                JediCount = jediCount,
+                SithCount = sithCount,
+                TotalCount = totalCount
             });
         }
     }

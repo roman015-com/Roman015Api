@@ -12,7 +12,11 @@ namespace Roman015API.Hubs
     {
         Task Order66Executed(int JediCount, int SithCount);
 
-        Task JoinSide(bool isJedi);
+        void JoinSide(bool isJedi);
+
+        void SwitchSide(bool isJedi);
+
+        void LeaveSide(bool isJedi);
     }
 
     public class StarWarsHub : Hub<IStarWarsHub>
@@ -20,20 +24,29 @@ namespace Roman015API.Hubs
         private readonly ILogger<StarWarsHub> logger;
         private readonly IDistributedCache distributedCache;
 
+        public static bool IsInitialSetupRequired = false;
+
         public StarWarsHub(ILogger<StarWarsHub> logger, IDistributedCache distributedCache)
         {
             this.logger = logger;
             this.distributedCache = distributedCache;
 
-            if(distributedCache.Get("JediCount") == null)
+            if(distributedCache.Get("JediLis") == null || IsInitialSetupRequired)
             {
                 distributedCache.Set("JediCount", BitConverter.GetBytes(0));
             }
 
-            if (distributedCache.Get("SithCount") == null)
+            if (distributedCache.Get("SithCount") == null || IsInitialSetupRequired)
             {
                 distributedCache.Set("SithCount", BitConverter.GetBytes(0));
             }
+
+            if(distributedCache.Get("TotalCount") == null || IsInitialSetupRequired)
+            {
+                distributedCache.Set("TotalCount", BitConverter.GetBytes(0));
+            }
+
+            IsInitialSetupRequired = false;
         }
 
         public async Task Order66Executed(int JediCount, int SithCount)
@@ -49,13 +62,13 @@ namespace Roman015API.Hubs
             }
         }
 
-        public async Task JoinSide(bool isJedi)
+        public void JoinSide(bool isJedi)
         {
-            await Groups.AddToGroupAsync(
-                Context.ConnectionId,
-                isJedi ? "Jedi" : "Sith");
-            
-            if(isJedi)
+            //await Groups.AddToGroupAsync(
+            //    Context.ConnectionId,
+            //    isJedi ? "Jedi" : "Sith");
+
+            if (isJedi)
             {                
                 distributedCache.Set(
                     "JediCount",
@@ -73,18 +86,84 @@ namespace Roman015API.Hubs
             }
         }
 
+        public void SwitchSide(bool isJedi)
+        {
+            //await Groups.RemoveFromGroupAsync(
+            //    Context.ConnectionId,
+            //    !isJedi ? "Jedi" : "Sith");
+
+            //await Groups.AddToGroupAsync(
+            //    Context.ConnectionId,
+            //    isJedi ? "Jedi" : "Sith");
+
+            if (isJedi)
+            {
+                distributedCache.Set(
+                    "JediCount",
+                    BitConverter.GetBytes(
+                        BitConverter.ToInt32(distributedCache.Get("JediCount")) + 1)
+                );
+                distributedCache.Set(
+                    "SithCount",
+                    BitConverter.GetBytes(
+                        BitConverter.ToInt32(distributedCache.Get("SithCount")) - 1)
+                );
+            }
+            else
+            {
+                distributedCache.Set(
+                    "JediCount",
+                    BitConverter.GetBytes(
+                        BitConverter.ToInt32(distributedCache.Get("JediCount")) - 1)
+                );
+                distributedCache.Set(
+                    "SithCount",
+                    BitConverter.GetBytes(
+                        BitConverter.ToInt32(distributedCache.Get("SithCount")) + 1)
+                );
+            }
+        }
+
+        public void LeaveSide(bool isJedi)
+        {
+            //await Groups.RemoveFromGroupAsync(
+            //    Context.ConnectionId,
+            //    isJedi ? "Jedi" : "Sith");
+
+            if (isJedi)
+            {
+                distributedCache.Set(
+                    "JediCount",
+                    BitConverter.GetBytes(
+                        BitConverter.ToInt32(distributedCache.Get("JediCount")) - 1)
+                );
+            }
+            else
+            {
+                distributedCache.Set(
+                    "SithCount",
+                    BitConverter.GetBytes(
+                        BitConverter.ToInt32(distributedCache.Get("SithCount")) - 1)
+                );
+            }
+        }
+
+        public override Task OnConnectedAsync()
+        {
+            distributedCache.Set("TotalCount", BitConverter.GetBytes(
+                BitConverter.ToInt32(distributedCache.Get("TotalCount")) + 1
+                ));
+
+            return base.OnConnectedAsync();
+        }
+
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            logger.Log(LogLevel.Information, "OnDisconnectedAsync : ConnectionId " + Context.ConnectionId);
-            try
-            {
-                Groups.RemoveFromGroupAsync(Context.ConnectionId, "JediCount");
-                Groups.RemoveFromGroupAsync(Context.ConnectionId, "SithCount");
-            }
-            catch (Exception e)
-            {
-                logger.Log(LogLevel.Error, "OnDisconnectedAsync : " + e.Message);
-            }
+            logger.Log(LogLevel.Warning, "OnDisconnectedAsync : ConnectionId " + Context.ConnectionId);
+
+            distributedCache.Set("TotalCount", BitConverter.GetBytes(
+                BitConverter.ToInt32(distributedCache.Get("TotalCount")) - 1
+                ));
 
             return base.OnDisconnectedAsync(exception);
         }

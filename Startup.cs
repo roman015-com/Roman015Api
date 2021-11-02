@@ -102,6 +102,8 @@ namespace Roman015API
             app.UseAuthentication();
             app.UseAuthorization();
 
+            StarWarsHub.IsInitialSetupRequired = true;
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
