@@ -34,6 +34,11 @@ namespace Roman015API.Controllers
             {
                 distributedCache.Set("SithCount", BitConverter.GetBytes(0));
             }
+
+            if (distributedCache.Get("TotalCount") == null)
+            {
+                distributedCache.Set("TotalCount", BitConverter.GetBytes(0));
+            }
         }
 
         [HttpGet]
