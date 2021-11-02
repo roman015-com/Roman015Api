@@ -64,46 +64,61 @@ namespace Roman015API.Hubs
 
         public void JoinSide(bool isJedi)
         {
+            int jediCount = BitConverter.ToInt32(distributedCache.Get("JediCount"));
+            int sithCount = BitConverter.ToInt32(distributedCache.Get("SithCount"));
+
             distributedCache.Set(
                 "JediCount",
                 BitConverter.GetBytes(
-                    BitConverter.ToInt32(distributedCache.Get("JediCount")) + (isJedi ? 1 : 0))
+                    (jediCount + (isJedi ? 1 : 0))
+                )
             );
 
             distributedCache.Set(
                 "SithCount",
                 BitConverter.GetBytes(
-                    BitConverter.ToInt32(distributedCache.Get("SithCount")) + (isJedi ? 0 : 1))
+                    (sithCount + (isJedi ? 0 : 1))
+                )
             );
         }
 
         public void SwitchSide(bool isJedi)
         {
+            int jediCount = BitConverter.ToInt32(distributedCache.Get("JediCount"));
+            int sithCount = BitConverter.ToInt32(distributedCache.Get("SithCount"));
+
             distributedCache.Set(
-                    "JediCount",
-                    BitConverter.GetBytes(
-                        BitConverter.ToInt32(distributedCache.Get("JediCount")) + (isJedi ? 1 : -1))
-                );
+                "JediCount",
+                BitConverter.GetBytes(
+                    (jediCount + (isJedi ? 1 : -1))
+                )
+            );
 
             distributedCache.Set(
                 "SithCount",
                 BitConverter.GetBytes(
-                    BitConverter.ToInt32(distributedCache.Get("SithCount")) + (isJedi ? -1 : 1))
+                    (sithCount + (isJedi ? -1 : 1))
+                )
             );
         }
 
         public void LeaveSide(bool isJedi)
         {
+            int jediCount = BitConverter.ToInt32(distributedCache.Get("JediCount"));
+            int sithCount = BitConverter.ToInt32(distributedCache.Get("SithCount"));
+
             distributedCache.Set(
                 "JediCount",
                 BitConverter.GetBytes(
-                    BitConverter.ToInt32(distributedCache.Get("JediCount")) + (isJedi ? -1 : 0))
+                    (jediCount + (isJedi ? -1 : 0))
+                )
             );
 
             distributedCache.Set(
                 "SithCount",
                 BitConverter.GetBytes(
-                    BitConverter.ToInt32(distributedCache.Get("SithCount")) + (isJedi ? 0 : -1))
+                    (sithCount + (isJedi ? 0 : -1))
+                )
             );
         }
 
