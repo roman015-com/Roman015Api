@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Roman015API.Controllers
@@ -25,14 +26,9 @@ namespace Roman015API.Controllers
             this.hubContext = hubContext;
             this.distributedCache = distributedCache;
 
-            if (distributedCache.Get("JediCount") == null)
+            if (distributedCache.Get("ForceCount") == null)
             {
-                distributedCache.Set("JediCount", BitConverter.GetBytes(0));
-            }
-
-            if (distributedCache.Get("SithCount") == null)
-            {
-                distributedCache.Set("SithCount", BitConverter.GetBytes(0));
+                SetForceCount(0, 0);
             }
 
             if (distributedCache.Get("TotalCount") == null)
@@ -46,11 +42,12 @@ namespace Roman015API.Controllers
         [Authorize(Roles = "WearOSApp")]
         public IActionResult GetCount()
         {
+            GetForceCount(out int jediCount, out int sithCount);
             return Ok(new
             {
                 RequestTimeStamp = DateTime.Now.ToString("dd/MM/yyyy HH:mm.ss"),
-                JediCount = BitConverter.ToInt32(distributedCache.Get("JediCount")),
-                SithCount = BitConverter.ToInt32(distributedCache.Get("SithCount")),
+                JediCount = jediCount,
+                SithCount = sithCount,
                 TotalCount = BitConverter.ToInt32(distributedCache.Get("TotalCount"))
             });
         }
@@ -60,12 +57,10 @@ namespace Roman015API.Controllers
         [Authorize(Roles = "WearOSApp")]
         public IActionResult ExecuteOrder66()
         {
-            int jediCount = BitConverter.ToInt32(distributedCache.Get("JediCount"));
-            int sithCount = BitConverter.ToInt32(distributedCache.Get("SithCount"));
+            GetForceCount(out int jediCount, out int sithCount);
             int totalCount = BitConverter.ToInt32(distributedCache.Get("TotalCount"));
 
-            distributedCache.Set("JediCount", BitConverter.GetBytes(0));
-            distributedCache.Set("SithCount", BitConverter.GetBytes(0));
+            SetForceCount(0, 0);
 
             hubContext.Clients.All.Order66Executed(jediCount, sithCount);
 
@@ -76,6 +71,22 @@ namespace Roman015API.Controllers
                 SithCount = sithCount,
                 TotalCount = totalCount
             });
+        }
+
+        public void GetForceCount(out int Jedi, out int Sith)
+        {
+            string[] counts = Encoding.ASCII.GetString(distributedCache.Get("ForceCount"))
+                                .Split(",");
+            Jedi = Convert.ToInt32(counts[0]);
+            Sith = Convert.ToInt32(counts[1]);
+        }
+
+        public void SetForceCount(int Jedi, int Sith)
+        {
+            distributedCache.Set(
+                "ForceCount",
+                Encoding.ASCII.GetBytes(Jedi.ToString() + "," + Sith.ToString())
+                );
         }
     }
 }
