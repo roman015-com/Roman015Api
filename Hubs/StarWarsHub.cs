@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Roman015API.Hubs
@@ -24,6 +25,22 @@ namespace Roman015API.Hubs
         private readonly ILogger<StarWarsHub> logger;
         private readonly IDistributedCache distributedCache;
 
+        public void GetForceCount(out int Jedi, out int Sith)
+        {
+            string[] counts = Encoding.ASCII.GetString(distributedCache.Get("ForceCount"))
+                                .Split(",");
+            Jedi = Convert.ToInt32(counts[0]);
+            Sith = Convert.ToInt32(counts[1]);
+        }
+
+        public void SetForceCount(int Jedi, int Sith)
+        {
+            distributedCache.Set(
+                "ForceCount",
+                Encoding.ASCII.GetBytes(Jedi.ToString() + "," + Sith.ToString())
+                );
+        }
+
         public static bool IsInitialSetupRequired = false;
 
         public StarWarsHub(ILogger<StarWarsHub> logger, IDistributedCache distributedCache)
@@ -31,14 +48,9 @@ namespace Roman015API.Hubs
             this.logger = logger;
             this.distributedCache = distributedCache;
 
-            if(distributedCache.Get("JediLis") == null || IsInitialSetupRequired)
+            if(distributedCache.Get("ForceCount") == null || IsInitialSetupRequired)
             {
-                distributedCache.Set("JediCount", BitConverter.GetBytes(0));
-            }
-
-            if (distributedCache.Get("SithCount") == null || IsInitialSetupRequired)
-            {
-                distributedCache.Set("SithCount", BitConverter.GetBytes(0));
+                SetForceCount(0, 0);
             }
 
             if(distributedCache.Get("TotalCount") == null || IsInitialSetupRequired)
@@ -64,61 +76,28 @@ namespace Roman015API.Hubs
 
         public void JoinSide(bool isJedi)
         {
-            int jediCount = BitConverter.ToInt32(distributedCache.Get("JediCount"));
-            int sithCount = BitConverter.ToInt32(distributedCache.Get("SithCount"));
-
-            distributedCache.Set(
-                "JediCount",
-                BitConverter.GetBytes(
-                    (jediCount + (isJedi ? 1 : 0))
-                )
-            );
-
-            distributedCache.Set(
-                "SithCount",
-                BitConverter.GetBytes(
-                    (sithCount + (isJedi ? 0 : 1))
-                )
+            GetForceCount(out int jedi, out int sith);
+            SetForceCount(
+                isJedi ? jedi + 1 : jedi,
+                !isJedi ? sith + 1 : sith
             );
         }
 
         public void SwitchSide(bool isJedi)
         {
-            int jediCount = BitConverter.ToInt32(distributedCache.Get("JediCount"));
-            int sithCount = BitConverter.ToInt32(distributedCache.Get("SithCount"));
-
-            distributedCache.Set(
-                "JediCount",
-                BitConverter.GetBytes(
-                    (jediCount + (isJedi ? 1 : -1))
-                )
-            );
-
-            distributedCache.Set(
-                "SithCount",
-                BitConverter.GetBytes(
-                    (sithCount + (isJedi ? -1 : 1))
-                )
+            GetForceCount(out int jedi, out int sith);
+            SetForceCount(
+                isJedi ? jedi + 1 : jedi - 1,
+                !isJedi ? sith + 1 : sith - 1
             );
         }
 
         public void LeaveSide(bool isJedi)
         {
-            int jediCount = BitConverter.ToInt32(distributedCache.Get("JediCount"));
-            int sithCount = BitConverter.ToInt32(distributedCache.Get("SithCount"));
-
-            distributedCache.Set(
-                "JediCount",
-                BitConverter.GetBytes(
-                    (jediCount + (isJedi ? -1 : 0))
-                )
-            );
-
-            distributedCache.Set(
-                "SithCount",
-                BitConverter.GetBytes(
-                    (sithCount + (isJedi ? 0 : -1))
-                )
+            GetForceCount(out int jedi, out int sith);
+            SetForceCount(
+                isJedi ? jedi - 1 : jedi,
+                !isJedi ? sith - 1 : sith
             );
         }
 
