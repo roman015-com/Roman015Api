@@ -83,9 +83,10 @@ namespace Roman015API.Controllers
 
         public void SetForceCount(int Jedi, int Sith)
         {
+            string temp = Jedi + "," + Sith;
             distributedCache.Set(
                 "ForceCount",
-                Encoding.ASCII.GetBytes(Jedi.ToString() + "," + Sith.ToString())
+                Encoding.ASCII.GetBytes(temp)
                 );
         }
     }
