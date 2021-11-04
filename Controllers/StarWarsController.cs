@@ -75,7 +75,7 @@ namespace Roman015API.Controllers
             });
         }
 
-        public void GetForceCount(out int Jedi, out int Sith)
+        private void GetForceCount(out int Jedi, out int Sith)
         {
             string[] counts = Encoding.ASCII.GetString(distributedCache.Get("ForceCount"))
                                 .Split(",");
@@ -83,7 +83,7 @@ namespace Roman015API.Controllers
             Sith = Convert.ToInt32(counts[1]);
         }
 
-        public void SetForceCount(int Jedi, int Sith)
+        private void SetForceCount(int Jedi, int Sith)
         {
             string temp = Jedi + "," + Sith;
             distributedCache.Set(
