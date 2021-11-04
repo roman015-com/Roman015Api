@@ -42,7 +42,8 @@ namespace Roman015API.Controllers
         [Authorize(Roles = "WearOSApp")]
         public IActionResult GetCount()
         {
-            GetForceCount(out int jediCount, out int sithCount);
+            int jediCount, sithCount;
+            GetForceCount(out jediCount, out sithCount);
             return Ok(new
             {
                 RequestTimeStamp = DateTime.Now.ToString("dd/MM/yyyy HH:mm.ss"),
@@ -57,7 +58,8 @@ namespace Roman015API.Controllers
         [Authorize(Roles = "WearOSApp")]
         public IActionResult ExecuteOrder66()
         {
-            GetForceCount(out int jediCount, out int sithCount);
+            int jediCount, sithCount;
+            GetForceCount(out jediCount, out sithCount);
             int totalCount = BitConverter.ToInt32(distributedCache.Get("TotalCount"));
 
             SetForceCount(0, 0);

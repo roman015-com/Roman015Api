@@ -77,7 +77,8 @@ namespace Roman015API.Hubs
 
         public void JoinSide(bool isJedi)
         {
-            GetForceCount(out int jedi, out int sith);
+            int jedi, sith;
+            GetForceCount(out jedi, out sith);
             SetForceCount(
                 isJedi ? jedi + 1 : jedi,
                 !isJedi ? sith + 1 : sith
@@ -86,7 +87,8 @@ namespace Roman015API.Hubs
 
         public void SwitchSide(bool isJedi)
         {
-            GetForceCount(out int jedi, out int sith);
+            int jedi, sith;
+            GetForceCount(out jedi, out sith);
             SetForceCount(
                 isJedi ? jedi + 1 : jedi - 1,
                 !isJedi ? sith + 1 : sith - 1
@@ -95,7 +97,8 @@ namespace Roman015API.Hubs
 
         public void LeaveSide(bool isJedi)
         {
-            GetForceCount(out int jedi, out int sith);
+            int jedi, sith;
+            GetForceCount(out jedi, out sith);
             SetForceCount(
                 isJedi ? jedi - 1 : jedi,
                 !isJedi ? sith - 1 : sith
