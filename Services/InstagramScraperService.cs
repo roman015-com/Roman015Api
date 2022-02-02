@@ -62,40 +62,40 @@ namespace Roman015API.Services
 
                     #region Sort & Store Data
                     #region Game
-                    string GameFileName = "game.json";
-                    List<InstagramPost> GamePosts = postsFromApi
-                        .Where(item => item.caption.Contains("#GameA ") || item.caption.Contains("#GameN "))
-                        .ToList();
+                    //string GameFileName = "game.json";
+                    //List<InstagramPost> GamePosts = postsFromApi
+                    //    .Where(item => item.caption.Contains("#GameA ") || item.caption.Contains("#GameN "))
+                    //    .ToList();
 
-                    ids = GamePosts.Select(item => item.id).ToArray();
-                    postsFromApi = postsFromApi
-                        .Where(item => !ids.Contains(item.id))
-                        .ToList();
+                    //ids = GamePosts.Select(item => item.id).ToArray();
+                    //postsFromApi = postsFromApi
+                    //    .Where(item => !ids.Contains(item.id))
+                    //    .ToList();
 
-                    // Upload data to files
-                    BlobContainer.DeleteBlobIfExists(GameFileName);
-                    BlobContainer.UploadBlob(GameFileName, BinaryData.FromString(JsonSerializer.Serialize(GamePosts)));
+                    //// Upload data to files
+                    //BlobContainer.DeleteBlobIfExists(GameFileName);
+                    //BlobContainer.UploadBlob(GameFileName, BinaryData.FromString(JsonSerializer.Serialize(GamePosts)));
                     #endregion
 
                     #region Home
-                    string HomeFileName = "home.json";
-                    List<InstagramPost> HomePosts = postsFromApi
-                        .Where(item => item.caption.Contains("#Home "))
-                        .Select(item =>
-                        {
-                            item.caption.Replace("#Home ", string.Empty);
-                            return item;
-                        })
-                        .ToList();
+                    //string HomeFileName = "home.json";
+                    //List<InstagramPost> HomePosts = postsFromApi
+                    //    .Where(item => item.caption.Contains("#Home "))
+                    //    .Select(item =>
+                    //    {
+                    //        item.caption.Replace("#Home ", string.Empty);
+                    //        return item;
+                    //    })
+                    //    .ToList();
 
-                    ids = HomePosts.Select(item => item.id).ToArray();
-                    postsFromApi = postsFromApi
-                        .Where(item => !ids.Contains(item.id))
-                        .ToList();
+                    //ids = HomePosts.Select(item => item.id).ToArray();
+                    //postsFromApi = postsFromApi
+                    //    .Where(item => !ids.Contains(item.id))
+                    //    .ToList();
 
-                    // Upload data to files
-                    BlobContainer.DeleteBlobIfExists(HomeFileName);
-                    BlobContainer.UploadBlob(HomeFileName, BinaryData.FromString(JsonSerializer.Serialize(HomePosts)));
+                    //// Upload data to files
+                    //BlobContainer.DeleteBlobIfExists(HomeFileName);
+                    //BlobContainer.UploadBlob(HomeFileName, BinaryData.FromString(JsonSerializer.Serialize(HomePosts)));
                     #endregion
 
                     #region Announcement
@@ -121,25 +121,25 @@ namespace Roman015API.Services
                     #endregion
 
                     #region Betrothal
-                    string BetrothalFileName = "betrothal.json";
-                    List<InstagramPost> BetrothalPosts = postsFromApi
-                        .Where(item => item.caption.Contains("#Betrothal "))
-                        .Select(item =>
-                        {
-                            item.caption.Replace("#Betrothal ", string.Empty);
-                            return item;
-                        })
-                        .OrderBy(item => item.caption)
-                        .ToList();
+                    //string BetrothalFileName = "betrothal.json";
+                    //List<InstagramPost> BetrothalPosts = postsFromApi
+                    //    .Where(item => item.caption.Contains("#Betrothal "))
+                    //    .Select(item =>
+                    //    {
+                    //        item.caption.Replace("#Betrothal ", string.Empty);
+                    //        return item;
+                    //    })
+                    //    .OrderBy(item => item.caption)
+                    //    .ToList();
 
-                    ids = BetrothalPosts.Select(item => item.id).ToArray();
-                    postsFromApi = postsFromApi
-                        .Where(item => !ids.Contains(item.id))
-                        .ToList();
+                    //ids = BetrothalPosts.Select(item => item.id).ToArray();
+                    //postsFromApi = postsFromApi
+                    //    .Where(item => !ids.Contains(item.id))
+                    //    .ToList();
 
-                    // Upload data to files
-                    BlobContainer.DeleteBlobIfExists(BetrothalFileName);
-                    BlobContainer.UploadBlob(BetrothalFileName, BinaryData.FromString(JsonSerializer.Serialize(BetrothalPosts)));
+                    //// Upload data to files
+                    //BlobContainer.DeleteBlobIfExists(BetrothalFileName);
+                    //BlobContainer.UploadBlob(BetrothalFileName, BinaryData.FromString(JsonSerializer.Serialize(BetrothalPosts)));
                     #endregion
 
                     //#region LiveStream (i.e., Anything else not filtered out)
@@ -162,6 +162,8 @@ namespace Roman015API.Services
             null,
             TimeSpan.Zero,
             TimeSpan.FromMinutes(2));
+
+            Console.WriteLine("InstagramScraperService - Timer Started");
 
             return Task.CompletedTask;
         }
