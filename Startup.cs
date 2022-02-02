@@ -79,7 +79,7 @@ namespace Roman015API
             services.AddControllers().AddControllersAsServices();
 
             services.AddHostedService<CacheWarmupService>();
-            services.AddHostedService<InstagramScraperService>();
+            //services.AddHostedService<InstagramScraperService>();
 
         }
 
