@@ -99,25 +99,25 @@ namespace Roman015API.Services
                     #endregion
 
                     #region Announcement
-                    string AnnouncementFileName = "announcement.json";
-                    List<InstagramPost> AnnouncementPosts = postsFromApi
-                        .Where(item => item.caption.Contains("#Announcement "))
-                        .Select(item =>
-                        {
-                            item.caption.Replace("#Announcement ", string.Empty);
-                            return item;
-                        })
-                        .OrderBy(item => item.caption)
-                        .ToList();
+                    //string AnnouncementFileName = "announcement.json";
+                    //List<InstagramPost> AnnouncementPosts = postsFromApi
+                    //    .Where(item => item.caption.Contains("#Announcement "))
+                    //    .Select(item =>
+                    //    {
+                    //        item.caption.Replace("#Announcement ", string.Empty);
+                    //        return item;
+                    //    })
+                    //    .OrderBy(item => item.caption)
+                    //    .ToList();
 
-                    ids = AnnouncementPosts.Select(item => item.id).ToArray();
-                    postsFromApi = postsFromApi
-                        .Where(item => !ids.Contains(item.id))
-                        .ToList();
+                    //ids = AnnouncementPosts.Select(item => item.id).ToArray();
+                    //postsFromApi = postsFromApi
+                    //    .Where(item => !ids.Contains(item.id))
+                    //    .ToList();
 
-                    // Upload data to files
-                    BlobContainer.DeleteBlobIfExists(AnnouncementFileName);
-                    BlobContainer.UploadBlob(AnnouncementFileName, BinaryData.FromString(JsonSerializer.Serialize(AnnouncementPosts)));
+                    //// Upload data to files
+                    //BlobContainer.DeleteBlobIfExists(AnnouncementFileName);
+                    //BlobContainer.UploadBlob(AnnouncementFileName, BinaryData.FromString(JsonSerializer.Serialize(AnnouncementPosts)));
                     #endregion
 
                     #region Betrothal
